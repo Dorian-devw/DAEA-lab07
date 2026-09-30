@@ -1,6 +1,3 @@
--- =======================================================
--- Creación de Base de Datos y Tablas para BibliotecaDB
--- =======================================================
 
 USE master;
 GO
@@ -18,7 +15,6 @@ GO
 USE BibliotecaDB;
 GO
 
--- 1. Tabla Autores
 CREATE TABLE Autores (
     AutorId INT IDENTITY(1,1) PRIMARY KEY,
     Nombre NVARCHAR(100) NOT NULL,
@@ -27,7 +23,6 @@ CREATE TABLE Autores (
 );
 GO
 
--- 2. Tabla Libros
 CREATE TABLE Libros (
     LibroId INT IDENTITY(1,1) PRIMARY KEY,
     Titulo NVARCHAR(200) NOT NULL,
@@ -39,7 +34,6 @@ CREATE TABLE Libros (
 );
 GO
 
--- 3. Tabla Socios
 CREATE TABLE Socios (
     SocioId INT IDENTITY(1,1) PRIMARY KEY,
     DNI NVARCHAR(20) NOT NULL UNIQUE,
@@ -49,7 +43,6 @@ CREATE TABLE Socios (
 );
 GO
 
--- 4. Tabla Prestamos
 CREATE TABLE Prestamos (
     PrestamoId INT IDENTITY(1,1) PRIMARY KEY,
     SocioId INT NOT NULL,
@@ -60,7 +53,6 @@ CREATE TABLE Prestamos (
 );
 GO
 
--- 5. Tabla DetallePrestamo
 CREATE TABLE DetallePrestamo (
     PrestamoId INT NOT NULL,
     LibroId INT NOT NULL,
@@ -71,11 +63,7 @@ CREATE TABLE DetallePrestamo (
 );
 GO
 
--- =======================================================
--- Inserción de Datos de Prueba (Seed)
--- =======================================================
 
--- 8 Autores
 INSERT INTO Autores (Nombre, Nacionalidad) VALUES 
 ('Gabriel García Márquez', 'Colombiana'),
 ('Mario Vargas Llosa', 'Peruana'),
@@ -86,7 +74,6 @@ INSERT INTO Autores (Nombre, Nacionalidad) VALUES
 ('J.K. Rowling', 'Británica'),
 ('Isaac Asimov', 'Estadounidense');
 
--- 20 Libros
 INSERT INTO Libros (Titulo, ISBN, AutorId, Ejemplares) VALUES 
 ('Cien años de soledad', '978-0307474728', 1, 5),
 ('El amor en los tiempos del cólera', '978-0307389732', 1, 3),
@@ -109,7 +96,6 @@ INSERT INTO Libros (Titulo, ISBN, AutorId, Ejemplares) VALUES
 ('Fundación e Imperio', '978-8498890486', 8, 4),
 ('Segunda Fundación', '978-8498890493', 8, 4);
 
--- 10 Socios
 INSERT INTO Socios (DNI, Nombre, Email) VALUES 
 ('11111111', 'Juan Perez', 'juan@email.com'),
 ('22222222', 'Maria Garcia', 'maria@email.com'),
@@ -122,8 +108,6 @@ INSERT INTO Socios (DNI, Nombre, Email) VALUES
 ('99999999', 'Pedro Sanchez', 'pedro@email.com'),
 ('10101010', 'Carmen Torres', 'carmen@email.com');
 
--- 5 Préstamos de prueba
--- Préstamo 1: Socio 1 (Juan Perez) - 3 libros pendientes (Para probar límite)
 INSERT INTO Prestamos (SocioId, FechaPrestamo, FechaLimite, Estado) 
 VALUES (1, GETDATE() - 5, GETDATE() + 2, 'Pendiente');
 DECLARE @P1 INT = SCOPE_IDENTITY();
@@ -132,29 +116,24 @@ INSERT INTO DetallePrestamo (PrestamoId, LibroId) VALUES (@P1, 2);
 INSERT INTO DetallePrestamo (PrestamoId, LibroId) VALUES (@P1, 3);
 UPDATE Libros SET Ejemplares = Ejemplares - 1 WHERE LibroId IN (1, 2, 3);
 
--- Préstamo 2: Socio 2 - 1 libro prestado y ya vencido (Para probar multas)
 INSERT INTO Prestamos (SocioId, FechaPrestamo, FechaLimite, Estado) 
 VALUES (2, GETDATE() - 10, GETDATE() - 3, 'Pendiente');
 DECLARE @P2 INT = SCOPE_IDENTITY();
 INSERT INTO DetallePrestamo (PrestamoId, LibroId) VALUES (@P2, 9);
 UPDATE Libros SET Ejemplares = Ejemplares - 1 WHERE LibroId IN (9);
 
--- Préstamo 3: Socio 3 - 1 libro prestado
 INSERT INTO Prestamos (SocioId, FechaPrestamo, FechaLimite, Estado) 
 VALUES (3, GETDATE() - 2, GETDATE() + 5, 'Pendiente');
 DECLARE @P3 INT = SCOPE_IDENTITY();
 INSERT INTO DetallePrestamo (PrestamoId, LibroId) VALUES (@P3, 15);
 UPDATE Libros SET Ejemplares = Ejemplares - 1 WHERE LibroId IN (15);
 
--- Préstamo 4: Socio 4 - Préstamo Devuelto
 INSERT INTO Prestamos (SocioId, FechaPrestamo, FechaLimite, Estado) 
 VALUES (4, GETDATE() - 15, GETDATE() - 8, 'Devuelto');
 DECLARE @P4 INT = SCOPE_IDENTITY();
 INSERT INTO DetallePrestamo (PrestamoId, LibroId, FechaDevolucion) VALUES (@P4, 5, GETDATE() - 10);
 INSERT INTO DetallePrestamo (PrestamoId, LibroId, FechaDevolucion) VALUES (@P4, 6, GETDATE() - 10);
--- Los libros ya estarían devueltos, no restamos ejemplares.
 
--- Préstamo 5: Socio 5 - 2 libros prestados
 INSERT INTO Prestamos (SocioId, FechaPrestamo, FechaLimite, Estado) 
 VALUES (5, GETDATE() - 1, GETDATE() + 6, 'Pendiente');
 DECLARE @P5 INT = SCOPE_IDENTITY();
