@@ -1,0 +1,20 @@
+<Window x:Class="Biblioteca.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        Title="Sistema de Biblioteca" Height="600" Width="900" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <hc:TabControl x:Name="MainTabControl" Grid.Row="1" Style="{StaticResource TabControlInLine}">
+            <hc:TabItem Header="Libros" x:Name="TabLibros" />
+            <hc:TabItem Header="Socios" x:Name="TabSocios" />
+            <hc:TabItem Header="Préstamos" x:Name="TabPrestamos" />
+            <hc:TabItem Header="Devoluciones" x:Name="TabDevoluciones" />
+            <hc:TabItem Header="Reportes" x:Name="TabReportes" />
+        </hc:TabControl>
+    </Grid>
+</Window>
